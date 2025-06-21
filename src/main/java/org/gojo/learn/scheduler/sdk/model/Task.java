@@ -1,64 +1,34 @@
 package org.gojo.learn.scheduler.sdk.model;
 
-import java.time.Instant;
-import java.util.Map;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
+@Data
+@Entity
+@Builder
+@Table(name = "scheduled_tasks")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
 
-  public String rowKey;
-  public String type;
-  public Instant scheduledTime;
-  public long intervalSeconds;
-  public Map<String, byte[]> payload;
-  public String status;
+    @Id
+    private String id;
 
-  // Getters and setters
+    @Column(nullable = false)
+    private String type;
 
-  public String getRowKey() {
-    return rowKey;
-  }
+    @Column(name = "execute_at", nullable = false)
+    private Instant executeAt;
 
-  public void setRowKey(String rowKey) {
-    this.rowKey = rowKey;
-  }
+    @Column(columnDefinition = "TEXT")
+    private String payload;
 
-  public String getType() {
-    return type;
-  }
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status = TaskStatus.SCHEDULED;
 
-  public void setType(String type) {
-    this.type = type;
-  }
-
-  public Instant getScheduledTime() {
-    return scheduledTime;
-  }
-
-  public void setScheduledTime(Instant scheduledTime) {
-    this.scheduledTime = scheduledTime;
-  }
-
-  public long getIntervalSeconds() {
-    return intervalSeconds;
-  }
-
-  public void setIntervalSeconds(long intervalSeconds) {
-    this.intervalSeconds = intervalSeconds;
-  }
-
-  public Map<String, byte[]> getPayload() {
-    return payload;
-  }
-
-  public void setPayload(Map<String, byte[]> payload) {
-    this.payload = payload;
-  }
-
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
 }

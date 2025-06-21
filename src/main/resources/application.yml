@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3308/testdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC} #change localhost to mysql if inside containers
+    username: ${SPRING_DATASOURCE_USERNAME:user}
+    password: ${SPRING_DATASOURCE_PASSWORD:userpass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: MYSQL
+    show_sql: false
+    generate-ddl: false
+    hibernate:
+      generate_statistics: false
+      ddl-auto: update
+    properties:
+      hibernate.integration.envers.enabled: false
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      org.hibernate.envers.audit_table_suffix: _history
+      hibernate.jdbc.time_zone: Asia/Kolkata
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+server:
+  port: 8081
+
+springdoc:
+  show-actuator: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger
+    enabled: true
+    defaultModelsExpandDepth: 0
+    defaultModelExpandDepth: 0
+
+hbase:
+  zookeeper:
+    quorum: localhost
+    property:
+      clientPort: 2181
