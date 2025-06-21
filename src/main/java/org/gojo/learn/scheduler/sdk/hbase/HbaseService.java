@@ -3,20 +3,26 @@ package org.gojo.learn.scheduler.sdk.hbase;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
 public class HbaseService {
 
+    private final Connection hbaseConnection;
 
-    private Connection hbaseConnection;
-
+    @Autowired
     public HbaseService(Connection hbaseConnection) {
         this.hbaseConnection = hbaseConnection;
     }
 
-    public void saveData(String tableName, String rowKey, String columnFamily,
-                         String columnQualifier, String value) throws IOException {
+    public void saveData(
+            String tableName,
+            String rowKey,
+            String columnFamily,
+            String columnQualifier,
+            String value
+    ) throws IOException {
 
         try (Table table = hbaseConnection.getTable(TableName.valueOf(tableName))) {
             Put put = new Put(Bytes.toBytes(rowKey));
