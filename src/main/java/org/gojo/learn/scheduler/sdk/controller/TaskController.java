@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/schedule")
 public class TaskController {
+
     private final TaskService taskService;
 
     public TaskController(TaskService taskService) {
@@ -21,8 +23,8 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<?> schedule(@RequestBody TaskRequest req) {
-        Task task = taskService.schedule(req);
-        return ResponseEntity.ok(Map.of("taskId", task.getId()));
+    public ResponseEntity<?> schedule(@RequestBody TaskRequest req) throws IOException {
+        taskService.schedule(req);
+        return ResponseEntity.ok().build();
     }
 }
