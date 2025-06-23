@@ -1,12 +1,17 @@
 package org.gojo.learn.scheduler.sdk.hbase;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.client.TableDescriptor;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+@Slf4j
+@Service
 public class HbaseService {
 
     private final Connection hbaseConnection;
@@ -15,6 +20,27 @@ public class HbaseService {
     public HbaseService(Connection hbaseConnection) {
         this.hbaseConnection = hbaseConnection;
     }
+
+    public void createColumnFamily(String tableNameStr, String columnFamilyName) throws IOException {
+
+        Admin admin = hbaseConnection.getAdmin();
+        TableName tableName = TableName.valueOf(tableNameStr);
+
+        if (!admin.tableExists(tableName)) {
+            // Define column family
+            TableDescriptor tableDescriptor = TableDescriptorBuilder.newBuilder(tableName)
+                    .setColumnFamily(ColumnFamilyDescriptorBuilder.of(columnFamilyName))
+                    .build();
+
+            // Create table
+            admin.createTable(tableDescriptor);
+            log.info("Table created: " + tableNameStr);
+        } else {
+            log.info("Table already exists: " + tableNameStr);
+        }
+
+    }
+
 
     public void saveData(
             String tableName,
