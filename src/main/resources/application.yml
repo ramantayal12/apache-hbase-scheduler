@@ -70,6 +70,9 @@ springdoc:
     defaultModelsExpandDepth: 0
     defaultModelExpandDepth: 0
 
+queue:
+  kafka-topic: "scheduled-tasks"
+
 database:
   table-name: "schedule"
   column_family: "cm1"

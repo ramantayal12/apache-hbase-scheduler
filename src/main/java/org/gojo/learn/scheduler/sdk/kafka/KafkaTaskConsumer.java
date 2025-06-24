@@ -5,6 +5,7 @@ import org.gojo.learn.scheduler.sdk.executor.SchedulerTaskExecutor;
 import org.gojo.learn.scheduler.sdk.model.Task;
 import org.gojo.learn.scheduler.sdk.model.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +28,7 @@ public class KafkaTaskConsumer {
     }
 
     @KafkaListener(
-            topics = "scheduled-tasks",
-            groupId = "task-scheduler"
+            topics = "${queue.kafka-topic}"
     )
     public void consume(String message) throws IOException {
         Task task = mapper.readValue(message, Task.class);
