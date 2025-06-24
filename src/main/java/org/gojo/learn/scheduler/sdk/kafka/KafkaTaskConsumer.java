@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gojo.learn.scheduler.sdk.executor.SchedulerTaskExecutor;
 import org.gojo.learn.scheduler.sdk.model.Task;
 import org.gojo.learn.scheduler.sdk.model.TaskStatus;
-import org.gojo.learn.scheduler.sdk.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -16,17 +15,14 @@ import java.time.Instant;
 public class KafkaTaskConsumer {
 
     private final ObjectMapper mapper;
-    private final TaskRepository taskRepo;
     private final SchedulerTaskExecutor schedulerTaskExecutor;
 
     @Autowired
     public KafkaTaskConsumer(
             ObjectMapper mapper,
-            TaskRepository taskRepo,
             SchedulerTaskExecutor schedulerTaskExecutor
     ) {
         this.mapper = mapper;
-        this.taskRepo = taskRepo;
         this.schedulerTaskExecutor = schedulerTaskExecutor;
     }
 
@@ -46,7 +42,6 @@ public class KafkaTaskConsumer {
             task.setStatus(TaskStatus.FAILED);
         }
 
-        taskRepo.save(task);
     }
 }
 
