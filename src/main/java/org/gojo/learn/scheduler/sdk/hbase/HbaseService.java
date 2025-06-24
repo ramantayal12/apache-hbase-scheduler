@@ -9,6 +9,7 @@ import org.apache.hadoop.hbase.client.TableDescriptor;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.gojo.learn.scheduler.sdk.model.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,23 +23,33 @@ public class HbaseService {
     private final ObjectMapper objectMapper;
     private final Connection hbaseConnection;
 
+    private final String tableName;
+    private final String columnFamilyName;
+
     @Autowired
     public HbaseService(
             ObjectMapper objectMapper,
-            Connection hbaseConnection
+            Connection hbaseConnection,
+            @Value("${database.table-name}") String tableName,
+            @Value("${database.column-family}") String columnFamilyName
     ) {
         this.objectMapper = objectMapper;
         this.hbaseConnection = hbaseConnection;
+        this.tableName = tableName;
+        this.columnFamilyName = columnFamilyName;
     }
 
-    public void createColumnFamily(String tableNameStr, String columnFamilyName) throws IOException {
+    public void createColumnFamily(
+            String tableNameStr,
+            String columnFamilyName
+    ) throws IOException {
 
         Admin admin = hbaseConnection.getAdmin();
-        TableName tableName = TableName.valueOf(tableNameStr);
+        TableName table = TableName.valueOf(tableNameStr);
 
-        if (!admin.tableExists(tableName)) {
+        if (!admin.tableExists(table)) {
             // Define column family
-            TableDescriptor tableDescriptor = TableDescriptorBuilder.newBuilder(tableName)
+            TableDescriptor tableDescriptor = TableDescriptorBuilder.newBuilder(table)
                     .setColumnFamily(ColumnFamilyDescriptorBuilder.of(columnFamilyName))
                     .build();
 
@@ -53,9 +64,7 @@ public class HbaseService {
 
 
     public void saveData(
-            String tableName,
             long rowKey,
-            String columnFamily,
             String columnQualifier,
             String value
     ) throws IOException {
@@ -63,7 +72,7 @@ public class HbaseService {
         try (Table table = hbaseConnection.getTable(TableName.valueOf(tableName))) {
             Put put = new Put(Bytes.toBytes(rowKey));
             put.addColumn(
-                    Bytes.toBytes(columnFamily),
+                    Bytes.toBytes(columnFamilyName),
                     Bytes.toBytes(columnQualifier),
                     Bytes.toBytes(value)
             );
@@ -72,19 +81,17 @@ public class HbaseService {
     }
 
     public String fetchData(
-            String tableName,
             long rowKey,
-            String columnFamily,
             String columnQualifier
     ) throws IOException {
 
         try (Table table = hbaseConnection.getTable(TableName.valueOf(tableName))) {
             Get get = new Get(Bytes.toBytes(rowKey));
-            get.addColumn(Bytes.toBytes(columnFamily), Bytes.toBytes(columnQualifier));
+            get.addColumn(Bytes.toBytes(columnFamilyName), Bytes.toBytes(columnQualifier));
 
             Result result = table.get(get);
             byte[] value = result.getValue(
-                    Bytes.toBytes(columnFamily),
+                    Bytes.toBytes(columnFamilyName),
                     Bytes.toBytes(columnQualifier)
             );
 
@@ -92,12 +99,15 @@ public class HbaseService {
         }
     }
 
-    public List<Task> fetchData(long rowKeyStart, long rowKeyEnd, String tableName ,String coloumnFamilyName) throws IOException {
+    public List<Task> fetchData(
+            long rowKeyStart,
+            long rowKeyEnd
+    ) throws IOException {
 
         Scan scan = new Scan()
                 .withStartRow(Bytes.toBytes(rowKeyStart))
                 .withStopRow(Bytes.toBytes(rowKeyEnd))
-                .addFamily(Bytes.toBytes(coloumnFamilyName));
+                .addFamily(Bytes.toBytes(columnFamilyName));
 
         try (Table table = hbaseConnection.getTable(TableName.valueOf(tableName));
              ResultScanner scanner = table.getScanner(scan)) {

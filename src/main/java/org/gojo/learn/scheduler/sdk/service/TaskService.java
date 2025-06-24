@@ -46,12 +46,9 @@ public class TaskService {
         String value = objectMapper.writeValueAsString(task);
 
         hbaseService.saveData(
-                "schedule",
                 req.getExecuteAt().toEpochMilli(),
-                "cm1",
-                "abc",
+                "FirstColumn",
                 value
-
         );
     }
 
@@ -59,7 +56,7 @@ public class TaskService {
         long now = Instant.now().toEpochMilli();
         long end = now + 60000;  // 60 seconds in milliseconds
 
-        return hbaseService.fetchData(now, end, "schedule","cm1");
+        return hbaseService.fetchData(now, end);
     }
 
     @Scheduled(fixedRate = 60000)  // Run every 30 seconds

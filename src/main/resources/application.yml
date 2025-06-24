@@ -70,6 +70,10 @@ springdoc:
     defaultModelsExpandDepth: 0
     defaultModelExpandDepth: 0
 
+database:
+  table-name: "schedule"
+  column_family: "cm1"
+
 hbase:
   zookeeper:
     quorum: localhost

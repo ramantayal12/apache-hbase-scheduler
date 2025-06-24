@@ -19,7 +19,7 @@ public class DBController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createColoumnFamily(
+    public ResponseEntity<?> createColumnFamily(
             @RequestParam String tableName,
             @RequestParam String columnFamilyName
     ) throws IOException {
