@@ -33,13 +33,6 @@
       <version>2.3.0</version>
     </dependency>
 
-    <!-- mysql connector is required for creating connection to localhost -->
-    <dependency>
-      <artifactId>mysql-connector-java</artifactId>
-      <groupId>mysql</groupId>
-      <version>8.0.33</version>
-    </dependency>
-
     <!--    Dependency requirement for kafka integration-->
     <dependency>
       <artifactId>spring-kafka</artifactId>
