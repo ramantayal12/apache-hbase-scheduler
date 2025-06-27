@@ -19,10 +19,43 @@ spring:
       org.hibernate.envers.audit_table_suffix: _history
       hibernate.jdbc.time_zone: Asia/Kolkata
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      batch.size: 16384
+      linger.ms: 10
+    consumer:
+      group-id:
+        default: ${DEFAULT_GROUP_ID:default-group-id}
+      max.poll.interval.ms: 300000
+      heartbeat.ms: 3000
+      session.timeout.ms: 45000
+      max.poll.records: 500
+      fetch.max.bytes: 52428800
+      fetch.min.bytes: 1
+      max.partition.fetch.bytes: 1048576
+      concurrency:
+        default: 2
+
+management:
+  endpoints:
+    web.exposure.include: health,prometheus,threaddump,heapdump,metrics,loggers
+    jmx.exposure.include: "*"
+  health:
+    redis.enabled: false
+    rabbit.enabled: false
+  metrics:
+    enable:
+      http: true
+      kafka: true
+      disk: true
+      system: true
+      cache: true
+      spring.data.repository: true
+      logback.events: false
+      log4j2.events: false
+  export:
+    prometheus:
+      enabled: true
 
 server:
   port: 8081
@@ -36,6 +69,13 @@ springdoc:
     enabled: true
     defaultModelsExpandDepth: 0
     defaultModelExpandDepth: 0
+
+queue:
+  kafka-topic: "scheduled-tasks"
+
+database:
+  table-name: "schedule"
+  column_family: "cm1"
 
 hbase:
   zookeeper:
